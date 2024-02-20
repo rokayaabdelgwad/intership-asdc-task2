@@ -83,9 +83,10 @@ export class UserService {
         throw new NotFoundException(`User with ID ${id} not found`);
       }
 
-      const user = await this.prisma.user.update({
+      const user = await this.prisma.user.update({  
+        // lastName:userData.lastName?userData.lastName:existingUser.lastName
         where: { id },
-        data: userData,
+        data: {email:userData.email?userData.email: existingUser.email,firstName:userData.firstName?userData.firstName:existingUser.firstName,lastName:userData.lastName?userData.lastName:existingUser.lastName },
       });
       return user;
     } catch (error) {
@@ -115,7 +116,7 @@ export class UserService {
       if (error instanceof NotFoundException) {
         throw error; // Re-throw the NotFoundException
       } else {
-        console.error('Error updating user:', error);
+        
         throw new InternalServerErrorException('Error deleted user');
       }
     }
