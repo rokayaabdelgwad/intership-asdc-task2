@@ -12,12 +12,12 @@ import { UserDto } from './dto';
 import { User } from '@prisma/client';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CustomBadRequestException } from 'src/utils/custom.exceptions';
-
+import {  LoggerService } from 'src/modules/logger/logger.service';
 @Injectable()
 export class UserService {
   constructor(
-    @Inject(forwardRef(() => PrismaService))
     private readonly prisma: PrismaService,
+    private readonly loggerService: LoggerService,
   ) {}
   async createUser(dto: UserDto) {
     try {
@@ -47,6 +47,7 @@ export class UserService {
       if (error instanceof CustomBadRequestException) {
         throw error; // Re-throw the CustomBadRequestException
       } else {
+        this.loggerService.logError(error);
         throw new InternalServerErrorException('Error creating user');
       }
     }
@@ -56,6 +57,7 @@ export class UserService {
     try {
       return this.prisma.user.findMany();
     } catch (error) {
+      this.loggerService.logError(error);
       throw new InternalServerErrorException('Error finded  users');
     }
   }
@@ -71,6 +73,7 @@ export class UserService {
       if (error instanceof NotFoundException) {
         throw error; // Re-throw the CustomBadRequestException
       } else {
+        this.loggerService.logError(error);
         throw new InternalServerErrorException('Error finded   user');
       }
     }
@@ -83,16 +86,25 @@ export class UserService {
         throw new NotFoundException(`User with ID ${id} not found`);
       }
 
-      const user = await this.prisma.user.update({  
+      const user = await this.prisma.user.update({
         // lastName:userData.lastName?userData.lastName:existingUser.lastName
         where: { id },
-        data: {email:userData.email?userData.email: existingUser.email,firstName:userData.firstName?userData.firstName:existingUser.firstName,lastName:userData.lastName?userData.lastName:existingUser.lastName },
+        data: {
+          email: userData.email ? userData.email : existingUser.email,
+          firstName: userData.firstName
+            ? userData.firstName
+            : existingUser.firstName,
+          lastName: userData.lastName
+            ? userData.lastName
+            : existingUser.lastName,
+        },
       });
       return user;
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error; // Re-throw the NotFoundException
       } else {
+        this.loggerService.logError(error);
         console.error('Error updating user:', error);
         throw new InternalServerErrorException('Error updated user');
       }
@@ -116,7 +128,7 @@ export class UserService {
       if (error instanceof NotFoundException) {
         throw error; // Re-throw the NotFoundException
       } else {
-        
+        this.loggerService.logError(error);
         throw new InternalServerErrorException('Error deleted user');
       }
     }

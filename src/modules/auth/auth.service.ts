@@ -5,11 +5,9 @@ import * as argon from 'argon2';
 import { CustomBadRequestException } from 'src/utils/custom.exceptions';
 import { InternalServerErrorException } from '@nestjs/common';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { error } from 'console';
-import { agent } from 'supertest';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-
+import { LoggerService } from 'src/modules/logger/logger.service';
 // /src/prisma/prisma.service
 @Injectable()
 export class AuthService {
@@ -17,6 +15,7 @@ export class AuthService {
     private prisma: PrismaService,
     private config: ConfigService,
     private jwt: JwtService,
+    private readonly LoggerService: LoggerService,
   ) {}
 
   async signup(dto: AuthDto) {
@@ -50,6 +49,7 @@ export class AuthService {
       if (error instanceof CustomBadRequestException) {
         throw error; // Re-throw the CustomBadRequestException
       } else {
+        this.LoggerService.logError(error);
         throw new InternalServerErrorException('Error creating user');
       }
     }

@@ -6,7 +6,7 @@ import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 @Injectable()
 export class PrismaService extends PrismaClient {
-    constructor(@Inject(forwardRef(() => UserService)) private  UserService: UserService,config: ConfigService) {
+    constructor(config: ConfigService) {
         super({
             datasources: {
                 db: {
