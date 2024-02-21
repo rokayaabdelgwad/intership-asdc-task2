@@ -6,7 +6,8 @@ import { LoggerService } from './logger.service';
     {
       provide: LoggerService,
       useFactory: () => {
-        const logDirectory = 'D:\\Projects\\intership asdc\\intership-asdc-task2\\src\\modules\\logger\\error'; 
+        // D:\Projects\intership asdc\intership-asdc-task2\error
+        const logDirectory = 'D:\\Projects\\intership asdc\\intership-asdc-task2\\error'; 
         return new LoggerService(logDirectory);
       },
     },
