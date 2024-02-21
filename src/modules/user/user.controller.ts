@@ -3,7 +3,9 @@ import { Controller, Get, Post, Put, Delete, Param, Body, NotFoundException, Pat
 import { UserService } from './user.service';
 import { UserDto } from './dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Users')
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -14,6 +16,8 @@ export class UserController {
   }
 
   @Get('get-all-users')
+  @ApiOperation({summary:"Get all users from this api"})
+  @ApiResponse({status:200,description:"All users List "})
   findAllUsers() {
     return this.userService.findAllUsers();
   }
