@@ -1,10 +1,11 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, NotFoundException, Patch } from '@nestjs/common';
-
+import { Controller, Get, Post,  Delete, Param, Body,   UseInterceptors,  UploadedFile, Patch } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserDto } from './dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { NationalIDDto } from './dto/nationalId.dto';
 @ApiTags('Users')
 @Controller('users')
 export class UserController {
@@ -13,6 +14,24 @@ export class UserController {
   @Post('create-user')
    createUser(@Body() dot:UserDto){
     return this.userService.createUser(dot);
+  }
+  @Post('upload-nationalId-image')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: 'uploads/img',
+        filename: (req, file, cb) => {
+          cb(null, file.originalname);
+        },
+      }),
+    }),
+  )
+  uploadNationalIdImage(@UploadedFile() file: Express.Multer.File,@Body() dto: NationalIDDto ) {
+    const result = this.userService.uploadNationalIdImage(dto,file); // Call the correct method from the userService
+    return {
+      statusCode: 200,
+      data: result,
+    };
   }
 
   @Get('get-all-users')

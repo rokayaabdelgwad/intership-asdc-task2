@@ -1,6 +1,6 @@
 
-import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { IsEmail, IsOptional, IsString } from 'class-validator';
+
 export class UpdateUserDto {
     constructor(email: string,lastName:string ,firstName: string ){
         this.email = email;
@@ -20,6 +20,10 @@ export class UpdateUserDto {
      @IsOptional()
     @IsString({ message: 'Last name must be a string' })
     lastName: string;
+
+
+ 
+
 }
 
 

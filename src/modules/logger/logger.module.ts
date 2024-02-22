@@ -7,7 +7,7 @@ import { LoggerService } from './logger.service';
       provide: LoggerService,
       useFactory: () => {
         // D:\Projects\intership asdc\intership-asdc-task2\error
-        const logDirectory = 'D:\\Projects\\intership asdc\\intership-asdc-task2\\error'; 
+        const logDirectory = 'D:\\Projects\\intership asdc\\intership-asdc-task4\\error'; 
         return new LoggerService(logDirectory);
       },
     },

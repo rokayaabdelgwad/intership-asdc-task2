@@ -1,8 +1,5 @@
 import {
   Injectable,
-  BadRequestException,
-  Inject,
-  forwardRef,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
@@ -12,7 +9,12 @@ import { UserDto } from './dto';
 import { User } from '@prisma/client';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CustomBadRequestException } from 'src/utils/custom.exceptions';
+import * as fs from 'fs';
+import * as path from 'path';
+import { generateFilename } from "../../utils/imageUpload"; 
+import { MemoryStorageFile } from '@blazity/nest-file-fastify';
 import {  LoggerService } from 'src/modules/logger/logger.service';
+import { NationalIDDto } from './dto/nationalId.dto';
 @Injectable()
 export class UserService {
   constructor(
@@ -51,6 +53,28 @@ export class UserService {
         throw new InternalServerErrorException('Error creating user');
       }
     }
+  }
+
+
+  async uploadNationalIdImage(dto: NationalIDDto,file: MemoryStorageFile) {
+      const filename = generateFilename(file.fieldname).toString();
+      const nationalID=dto.nationalID.toString()
+      const uploadPath = path.join(__dirname, '..', 'uploads', 'img', filename);
+      // const user = await this.prisma.user.create({
+      //   data:{
+      //     nationalID,
+        
+      //   }
+      // })
+      try {
+          if (!fs.existsSync(path.dirname(uploadPath))) {
+              fs.mkdirSync(path.dirname(uploadPath), { recursive: true });
+          }     
+          return filename;
+      } catch (error) {
+          this.loggerService.logError(error);
+          throw new InternalServerErrorException('Error upload profile picture ');
+      }
   }
 
   async findAllUsers() {
